@@ -33,7 +33,7 @@ export const FavoriteProvider = ({ children }: FavoriteProviderProps) => {
     useEffect(() => {
         const { 'movies.favorites': favorites } = parseCookies();
 
-        setFavoriteMovies(JSON.parse(favorites));
+        setFavoriteMovies(favorites ? JSON.parse(favorites) : []);
     }, []);
 
     // recieves a options param with movieId and set it on favoriteMovies state and cookies.
