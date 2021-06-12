@@ -7,6 +7,7 @@ interface Movie {
     title: string;
     posterPath: string;
     releaseDate: string;
+    isFavorite: boolean;
 }
 
 type MovieProps = {
@@ -19,9 +20,9 @@ export function Movie({ movie }: MovieProps) {
             <a className={styles.content} >
                 <img src={movie.posterPath} />
                 <div>
-                    <AiOutlineHeart />
+                    {movie.isFavorite ? <AiFillHeart /> : <AiOutlineHeart />}
                     <h2>{movie.title}</h2>
-                    <p>{movie.releaseDate.substr(0, 4)}</p>
+                    <p>{movie.releaseDate}</p>
                 </div>
             </a>
         </Link >

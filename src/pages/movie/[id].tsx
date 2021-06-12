@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from "next"
 import Link from "next/link"
@@ -7,6 +8,8 @@ import { GiTomato } from 'react-icons/gi'
 import api from "../../services/api";
 
 import styles from './styles.module.scss'
+import { useFavorite } from '../../hooks/useFavorites';
+import { useState } from 'react';
 
 interface Movie {
     id: string;
@@ -26,16 +29,25 @@ interface Movie {
         id: string;
         name: string;
     }[]
-    isUserFavorite: boolean;
 }
 
 type MovieProps = { movie: Movie }
 
 export default function Movie({ movie }: MovieProps) {
+
+    const { setFavorites, favoriteMovies } = useFavorite();
+
+    const [isFavorite, setIsFavorite] = useState(favoriteMovies.includes(movie.id))
+
+    const handleFavorite = useCallback((movieId) => {
+        setFavorites({ movieId });
+        setIsFavorite(state => !state)
+    }, []);
+
     return (
         <>
             <Head>
-                <title> {movie.title} - ({movie.releaseDate.substr(0, 4)}) | Movies</title>
+                <title> {movie.title} - ({movie.releaseDate}) | Movies</title>
             </Head>
             <div style={{ backgroundImage: `url(${movie.backdropPath})` }} className={styles.backgroundImage} >
                 <div>
@@ -51,10 +63,10 @@ export default function Movie({ movie }: MovieProps) {
                                 {movie.runtime} min
                             </span>
                             <span>
-                                • {movie.releaseDate.substr(0, 4)}
+                                • {movie.releaseDate}
                             </span>
                             {movie.genres.map(genre => (
-                                <span>
+                                <span key={genre.id}>
                                     • {genre.name}
                                 </span>
                             ))}
@@ -72,8 +84,8 @@ export default function Movie({ movie }: MovieProps) {
                                         rotten tomatoes
                                     </a>
                                 </button>
-                                <button type="button">
-                                    {movie.isUserFavorite ? (
+                                <button type="button" onClick={() => handleFavorite(movie.id)}>
+                                    {isFavorite ? (
                                         <>
                                             <AiFillHeart />
                                             favorito
@@ -130,7 +142,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
             id: response.data.id,
             title: response.data.title,
             posterPath: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${response.data.poster_path}`,
-            releaseDate: response.data.release_date,
+            releaseDate: response.data.release_date.substr(0, 4),
             backdropPath: `https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces${response.data.backdrop_path}`,
             overview: response.data.overview,
             runtime: response.data.runtime,
@@ -138,7 +150,6 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
             cast: formattedCast.slice(0, 6),
             director,
             genres: response.data.genres,
-            isUserFavorite: true,
         }
 
 
