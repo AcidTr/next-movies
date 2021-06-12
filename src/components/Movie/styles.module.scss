@@ -5,16 +5,6 @@
 
     position: relative;
 
-    &:link {
-        text-decoration: none;
-        color: var(--white);
-    }
-
-    &:visited {
-        text-decoration: none;
-        color: var(--white);
-    }
-
     img {
         height: 18rem;
         border-radius: 0.15rem;
