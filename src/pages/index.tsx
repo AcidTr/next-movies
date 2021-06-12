@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import api from '../services/api';
 import { useState } from 'react';
 import { Movie } from '../components/Movie';
+import { useCallback } from 'react';
 
 interface Movie {
     id: string;
@@ -14,12 +15,13 @@ interface Movie {
 }
 
 export default function Home() {
-    const [movies, setMovies] = useState<Movie[]>([])
+    const [moviesData, setMoviesData] = useState<Movie[]>([])
+    const [seachData, setSearchData] = useState<Movie[]>([])
 
     useEffect(() => {
+        // fetch data from The Movie DB API and format Movie poster and release date.
         api.get('/popular').then((response) => {
-            console.log(response.data);
-            const updatedMovies = response.data.results.map((currentMovie) => {
+            const updatedMovies: Movie[] = response.data.results.map((currentMovie) => {
                 return {
                     id: currentMovie.id,
                     title: currentMovie.title,
@@ -27,11 +29,19 @@ export default function Home() {
                     releaseDate: currentMovie.release_date,
                 }
             })
-            setMovies(updatedMovies);
+            setSearchData(updatedMovies);
+            setMoviesData(updatedMovies);
         }).catch((error) => {
             console.log(error)
         })
     }, []);
+
+    const onChangeText = useCallback(({ target }) => {
+        // converting string to lowercase to make search case insentive
+        const text = target.value.toLowerCase() || '';
+
+        setSearchData(moviesData.filter(movie => movie.title.toLowerCase().includes(text)))
+    }, [moviesData])
 
     return (
         <>
@@ -41,10 +51,10 @@ export default function Home() {
             <main className={styles.content}>
                 <div>
                     <FiSearch className={styles.icon} />
-                    <input placeholder='Pesquise filmes...' />
+                    <input placeholder='Pesquise filmes...' onChange={onChangeText} />
                 </div>
                 <section>
-                    {movies.map(movie => (
+                    {seachData.map(movie => (
                         <Movie key={movie.id} movie={movie} />
                     ))}
                 </section>
