@@ -1,7 +1,7 @@
 .content {
-    width: 5.4rem;
-    height: 8rem;
-    margin: 0.2rem;
+    width: 12rem;
+    height: 18rem;
+    margin: 0.5rem;
 
     position: relative;
 
@@ -16,7 +16,7 @@
     }
 
     img {
-        height: 8rem;
+        height: 18rem;
         border-radius: 0.15rem;
 
         transition: 0.2s ease;
@@ -27,7 +27,7 @@
     }
 
     div {
-        height: 8rem;
+        height: 18rem;
         padding: 0.2rem;
 
         transition: 0.2s ease;
@@ -48,20 +48,20 @@
 
         svg {
             position: absolute;
-            width: 0.6rem;
-            height: 0.6rem;
+            width: 1.5rem;
+            height: 1.5rem;
             top: 0;
             right: 0;
             margin: 0.2rem;
         }
 
         h2 {
-            font-size: 0.5rem;
+            font-size: 1rem;
         }
 
         p {
             padding-top: 2px;
-            font-size: 0.4rem;
+            font-size: 1rem;
         }
     }
 }
