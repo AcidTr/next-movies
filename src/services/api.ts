@@ -8,11 +8,10 @@ const api = axios.create({
 
 });
 
-console.log(process.env.NEXT_PUBLIC_TMDB_API_KEY)
 
 api.interceptors.request.use((request) => {
     request.params = request.params || {};
-    request.params['api_key'] = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+    request.params['api_key'] = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
     request.params['language'] = 'pt-BR';
     return request;
 });
