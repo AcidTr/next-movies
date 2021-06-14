@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import styles from './home.module.scss';
 import { FiSearch } from 'react-icons/fi'
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import NProgress from 'nprogress';
+
 import api from '../services/api';
 import { useState } from 'react';
 import { Movie } from '../components/Movie';
@@ -23,10 +25,9 @@ export default function Home() {
 
     const { favoriteMovies } = useFavorite();
 
-    const [moviesData, setMoviesData] = useState<Movie[]>([]);
-    const [seachData, setSearchData] = useState<Movie[]>([]);
+    const [loading, setLoading] = useState(false);
 
-
+    const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
 
     useEffect(() => {
         // fetch data from The Movie DB API and format Movie poster and release date.
@@ -40,8 +41,7 @@ export default function Home() {
                     isFavorite: favoriteMovies.includes(currentMovie.id),
                 }
             })
-            setSearchData(updatedMovies);
-            setMoviesData(updatedMovies);
+            setPopularMovies(updatedMovies);
         }).catch((error) => {
             console.log(error);
         })
@@ -53,14 +53,44 @@ export default function Home() {
             when comming back from movieDetails
             after adding/removing from favorites
          */
-        searchMovies(query);
+        setLoading(true);
+        NProgress.start();
+        searchMovies(query).finally(() => {
+            setLoading(false)
+            NProgress.done();
+        });
     }, [query])
 
     const onChangeText = useCallback(({ target }) => {
         const text = target.value || '';
 
         setQuery(text);
-    }, [moviesData])
+    }, [])
+
+    const renderSection = useMemo(() => {
+
+        if (moviesResult.length <= 0 && query && !loading) {
+            return (
+                <div>
+                    <FiSearch className={styles.icon} />
+                    <h3>Não encontramos<br />filmes para a sua <br /> pesquisa  :(</h3>
+                </div>
+            )
+        }
+
+        if (moviesResult.length > 0) {
+            return moviesResult.map((movie: Movie) => (
+                <Movie key={movie.id} movie={movie} />
+            ))
+        }
+
+        return popularMovies.map((movie: Movie) => (
+            <Movie key={movie.id} movie={movie} />
+        ))
+
+
+
+    }, [moviesResult, popularMovies, query, loading])
 
     return (
         <>
@@ -72,11 +102,9 @@ export default function Home() {
                     <FiSearch className={styles.icon} />
                     <input placeholder='Pesquise filmes...' onChange={onChangeText} value={query} />
                 </div>
-                <h2>{moviesResult.length ? 'Resultados' : 'Populares'}</h2>
+                <h2>{moviesResult.length ? 'Resultados' : 'Filmes Populares'}</h2>
                 <section>
-                    {(moviesResult.length ? moviesResult : seachData).map((movie: Movie) => (
-                        <Movie key={movie.id} movie={movie} />
-                    ))}
+                    {renderSection}
                 </section>
             </main>
         </>

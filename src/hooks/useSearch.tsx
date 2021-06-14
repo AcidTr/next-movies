@@ -4,9 +4,7 @@ import React, {
     ReactNode,
     useState,
     useCallback,
-
 } from 'react';
-import { useEffect } from 'react';
 import api from '../services/api';
 import { useFavorite } from './useFavorites';
 
@@ -22,7 +20,7 @@ interface SearchProviderProps {
     children: ReactNode;
 }
 
-const FavoriteContext = createContext<SearchContextData>({} as SearchContextData);
+const SearchContext = createContext<SearchContextData>({} as SearchContextData);
 
 export const SearchProvider = ({ children }: SearchProviderProps) => {
     const { favoriteMovies } = useFavorite();
@@ -51,7 +49,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     }, [favoriteMovies]);
 
     return (
-        <FavoriteContext.Provider
+        <SearchContext.Provider
             value={{
                 moviesResult,
                 searchMovies,
@@ -60,12 +58,12 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
             }}
         >
             {children}
-        </FavoriteContext.Provider>
+        </SearchContext.Provider>
     );
 };
 
 export function useSearch(): SearchContextData {
-    const context = useContext(FavoriteContext);
+    const context = useContext(SearchContext);
 
     if (!context) {
         throw new Error('useSearch must be used within an SearchProvider');
