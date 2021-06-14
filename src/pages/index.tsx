@@ -54,7 +54,6 @@ export default function Home() {
             after adding/removing from favorites
          */
         searchMovies(query);
-        }
     }, [query])
 
     const onChangeText = useCallback(({ target }) => {
