@@ -26,7 +26,7 @@ interface Movie {
     }[];
     director: string;
     genres: {
-        id: string;
+        id: number;
         name: string;
     }[]
 }
@@ -37,7 +37,7 @@ export default function Movie({ movie }: MovieProps) {
 
     const { setFavorites, favoriteMovies } = useFavorite();
 
-    const [isFavorite, setIsFavorite] = useState(favoriteMovies.includes(movie.id))
+    const [isFavorite, setIsFavorite] = useState(favoriteMovies?.includes(movie.id))
 
     const handleFavorite = useCallback((movieId) => {
         setFavorites({ movieId });
@@ -87,12 +87,12 @@ export default function Movie({ movie }: MovieProps) {
                                 <button type="button" onClick={() => handleFavorite(movie.id)}>
                                     {isFavorite ? (
                                         <>
-                                            <AiFillHeart />
+                                            <AiFillHeart data-testid="filled-heart-id" />
                                             favorito
                                         </>
                                     ) : (
                                         <>
-                                            <AiOutlineHeart />
+                                            <AiOutlineHeart data-testid="outline-heart-id" />
                                             Adicionar aos favoritos
                                         </>
                                     )}
@@ -129,8 +129,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     const { id } = params;
     try {
 
-        const response = await api.get(`/${id}`);
-        const creditsResponse = await api.get(`/${id}/credits`);
+        const response = await api.get(`/movie/${id}`);
+        const creditsResponse = await api.get(`/movie/${id}/credits`);
 
         const formattedCast = creditsResponse.data.cast.map(actor => {
             return { name: actor.name, character: actor.character }
@@ -143,7 +143,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
             title: response.data.title,
             posterPath: `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${response.data.poster_path}`,
             releaseDate: response.data.release_date.substr(0, 4),
-            backdropPath: `https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces${response.data.backdrop_path}`,
+            backdropPath: `https://www.themoviedb.org/t/p/w1280_and_h720_multi_faces${response.data.backdrop_path}`,
             overview: response.data.overview,
             runtime: response.data.runtime,
             tagline: response.data.tagline,
