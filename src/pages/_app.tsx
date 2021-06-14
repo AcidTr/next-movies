@@ -8,6 +8,7 @@ import { Header } from '../components/Header'
 import { FavoriteProvider } from '../hooks/useFavorites'
 
 import '../styles/global.scss'
+import { SearchProvider } from '../hooks/useSearch';
 
 function MyApp({ Component, pageProps }: AppProps) {
 
@@ -34,7 +35,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <>
             <Header />
             <FavoriteProvider>
-                <Component {...pageProps} />
+                <SearchProvider>
+                    <Component {...pageProps} />
+                </SearchProvider>
             </FavoriteProvider>
         </>
     )

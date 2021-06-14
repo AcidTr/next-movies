@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Movie } from '../components/Movie';
 import { useCallback } from 'react';
 import { useFavorite } from '../hooks/useFavorites';
+import { useSearch } from '../hooks/useSearch';
 
 interface Movie {
     id: string;
@@ -18,14 +19,18 @@ interface Movie {
 
 export default function Home() {
 
+    const { query, setQuery, moviesResult, searchMovies } = useSearch();
+
     const { favoriteMovies } = useFavorite();
 
     const [moviesData, setMoviesData] = useState<Movie[]>([]);
     const [seachData, setSearchData] = useState<Movie[]>([]);
 
+
+
     useEffect(() => {
         // fetch data from The Movie DB API and format Movie poster and release date.
-        api.get('/popular').then((response) => {
+        api.get('/movie/popular').then((response) => {
             const updatedMovies: Movie[] = response.data.results.map((currentMovie) => {
                 return {
                     id: currentMovie.id,
@@ -40,13 +45,23 @@ export default function Home() {
         }).catch((error) => {
             console.log(error);
         })
-    }, [favoriteMovies]);
+    }, [favoriteMovies, query]);
+
+    useEffect(() => {
+        /*  Search movies if there is a query.
+            Workaround to update movies components
+            when comming back from movieDetails
+            after adding/removing from favorites
+         */
+        if (query) {
+            searchMovies(query);
+        }
+    }, [query])
 
     const onChangeText = useCallback(({ target }) => {
-        // converting string to lowercase to make search case insentive
-        const text = target.value.toLowerCase() || '';
+        const text = target.value || '';
 
-        setSearchData(moviesData.filter(movie => movie.title.toLowerCase().includes(text)))
+        setQuery(text);
     }, [moviesData])
 
     return (
@@ -57,10 +72,11 @@ export default function Home() {
             <main className={styles.content}>
                 <div>
                     <FiSearch className={styles.icon} />
-                    <input placeholder='Pesquise filmes...' onChange={onChangeText} />
+                    <input placeholder='Pesquise filmes...' onChange={onChangeText} value={query} />
                 </div>
+                <h2>{moviesResult.length ? 'Resultados' : 'Populares'}</h2>
                 <section>
-                    {seachData.map(movie => (
+                    {(moviesResult.length ? moviesResult : seachData).map((movie: Movie) => (
                         <Movie key={movie.id} movie={movie} />
                     ))}
                 </section>
