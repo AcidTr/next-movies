@@ -53,8 +53,7 @@ export default function Home() {
             when comming back from movieDetails
             after adding/removing from favorites
          */
-        if (query) {
-            searchMovies(query);
+        searchMovies(query);
         }
     }, [query])
 
